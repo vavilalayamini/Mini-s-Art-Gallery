@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini's Art Gallery — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-page">
+  <header class="header">
+    <a href="index.html" class="logo"><span class="logo-mark">M</span><span><b>Mini's</b><small>ADMIN</small></span></a>
+    <a class="quiet-link" href="index.html">← View shop</a>
+  </header>
+  <main class="admin-main">
+    <div id="loginPanel" class="admin-card">
+      <span class="eyebrow">STORE MANAGEMENT</span><h1>Admin login</h1>
+      <p>Use the Supabase admin account created during setup.</p>
+      <form id="loginForm">
+        <label>Email<input name="email" type="email" required></label>
+        <label>Password<input name="password" type="password" required></label>
+        <button class="btn dark full">Sign in</button>
+        <p id="loginError" class="error"></p>
+      </form>
+    </div>
+
+    <div id="dashboard" hidden>
+      <div class="admin-title"><div><span class="eyebrow">DASHBOARD</span><h1>Orders</h1></div><button id="logout" class="btn outline">Log out</button></div>
+      <div class="stats" id="stats"></div>
+      <div class="admin-card table-card">
+        <div class="table-head"><h2>Recent orders</h2><button id="refresh" class="btn outline">Refresh</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment ref.</th><th>Status</th><th>Date</th></tr></thead><tbody id="ordersBody"></tbody></table></div>
+      </div>
+    </div>
+  </main>
+  <script src="config.js"></script>
+  <script>
+    const cfg = window.MINI_CONFIG || {};
+    const money = n => new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(n);
+    let client = null;
+
+    function setupClient(){
+      if(window.supabaseClient) { client = window.supabaseClient; return true; }
+      return false;
+    }
+    async function init(){
+      await new Promise(r=>setTimeout(r,350));
+      if(!setupClient()){
+        document.querySelector("#loginPanel p").textContent = "Supabase is not configured yet. Follow README.md to connect the live order database.";
+        return;
+      }
+      const {data:{session}} = await client.auth.getSession();
+      if(session) showDashboard(); else document.querySelector("#loginPanel").hidden = false;
+    }
+    async function showDashboard(){
+      $("#loginPanel").hidden = true; $("#dashboard").hidden = false; await loadOrders();
+    }
+    async function loadOrders(){
+      const {data,error} = await client.from("orders").select("*").order("created_at",{ascending:false}).limit(100);
+      if(error){ alert(error.message); return; }
+      const orders = data || [];
+      const revenue = orders.reduce((s,o)=>s+(o.total||0),0);
+      $("#stats").innerHTML = `<div><span>Total orders</span><b>${orders.length}</b></div><div><span>Gross order value</span><b>${money(revenue)}</b></div><div><span>Payment submitted</span><b>${orders.filter(o=>o.status==="Payment submitted").length}</b></div><div><span>Completed</span><b>${orders.filter(o=>o.status==="Completed").length}</b></div>`;
+      $("#ordersBody").innerHTML = orders.length ? orders.map(o=>`<tr>
+        <td><b>${o.order_number}</b></td><td>${o.customer_name}<small>${o.email}<br>${o.phone}</small></td>
+        <td>${(o.items||[]).map(i=>`${i.title} × ${i.quantity}`).join("<br>")}</td><td><b>${money(o.total)}</b></td>
+        <td>${o.payment_reference||"—"}</td>
+        <td><select data-status="${o.id}">${["Payment submitted","Confirmed","Packed","Shipped","Completed","Cancelled"].map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select></td>
+        <td>${new Date(o.created_at).toLocaleString("en-IN")}</td>
+      </tr>`).join("") : `<tr><td colspan="7" class="no-orders">No orders yet.</td></tr>`;
+      document.querySelectorAll("[data-status]").forEach(s=>s.onchange=async e=>{
+        const {error}=await client.from("orders").update({status:e.target.value}).eq("id",e.target.dataset.status);
+        if(error) alert(error.message);
+      });
+    }
+    function $(s){return document.querySelector(s);}
+    $("#loginForm").onsubmit=async e=>{
+      e.preventDefault(); const f=new FormData(e.target);
+      if(!client){$("#loginError").textContent="Connect Supabase in config.js first.";return;}
+      const {error}=await client.auth.signInWithPassword({email:f.get("email"),password:f.get("password")});
+      if(error) $("#loginError").textContent=error.message; else showDashboard();
+    };
+    $("#logout").onclick=async()=>{await client.auth.signOut();location.reload();};
+    $("#refresh").onclick=loadOrders;
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mini's Art Gallery — original handmade art, ordered directly online.">
+  <title>Mini's Art Gallery — Original Art</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="announcement">FREE SHIPPING ON ORDERS OVER ₹2,500 · HANDMADE IN INDIA</div>
+
+  <header class="header">
+    <a href="#top" class="logo">
+      <span class="logo-mark">M</span>
+      <span><b>Mini's</b><small>ART GALLERY</small></span>
+    </a>
+    <nav class="desktop-nav">
+      <a href="#shop">Shop</a><a href="#story">Our Story</a><a href="#faq">FAQ</a>
+    </nav>
+    <button class="cart-button" id="openCart" aria-label="Open shopping cart">
+      <span>Bag</span><i id="cartCount">0</i>
+    </button>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">ORIGINAL • HANDMADE • ONE OF A KIND</span>
+        <h1>Art that feels<br><em>personal.</em></h1>
+        <p>Thoughtfully drawn and painted pieces made to bring a little beauty, devotion and character into your space.</p>
+        <div class="hero-actions">
+          <a class="btn dark" href="#shop">Shop the collection</a>
+          <a class="quiet-link" href="#story">Meet the artist <span>↗</span></a>
+        </div>
+        <div class="trust-row">
+          <span>✦ Original artwork</span><span>✦ Secure UPI checkout</span><span>✦ India-wide delivery</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card">
+          <img src="images/krishna-art.jpg" alt="Krishna-inspired portrait artwork">
+          <div class="hero-label"><span>Featured</span><b>Krishna-Inspired Portrait</b></div>
+        </div>
+        <div class="circle-note">MADE<br>WITH<br>LOVE</div>
+      </div>
+    </section>
+
+    <section class="shop section" id="shop">
+      <div class="section-top">
+        <div><span class="eyebrow">THE COLLECTION</span><h2>Shop original art</h2></div>
+        <p>Small-batch pieces created by hand. Add your favourites to your bag and checkout directly on the site.</p>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <section class="story section" id="story">
+      <div class="story-image"><img src="images/sacred-mandala.jpg" alt="Sacred Symbol Mandala artwork"></div>
+      <div>
+        <span class="eyebrow">ABOUT MINI'S ART GALLERY</span>
+        <h2>A little gallery for art made from the heart.</h2>
+        <p>Mini's Art Gallery is a personal collection of handmade drawings and paintings. Every line, detail and finish is created with care, so your artwork feels more like a keepsake than a mass-produced decoration.</p>
+        <p>New pieces can be added to the collection as they are created. If you love something here, you can order it directly through the website.</p>
+        <a class="btn outline" href="#shop">Browse the collection</a>
+      </div>
+    </section>
+
+    <section class="benefits">
+      <div><b>01</b><h3>Handmade</h3><p>Each piece is created with patience and personal attention.</p></div>
+      <div><b>02</b><h3>Direct ordering</h3><p>No DMs required. Your order is placed right here on the website.</p></div>
+      <div><b>03</b><h3>UPI friendly</h3><p>Pay conveniently through your preferred UPI app.</p></div>
+      <div><b>04</b><h3>Careful delivery</h3><p>Shipping is calculated transparently at checkout.</p></div>
+    </section>
+
+    <section class="faq section" id="faq">
+      <div><span class="eyebrow">NEED TO KNOW</span><h2>Frequently asked</h2></div>
+      <div class="faq-list">
+        <details open><summary>How do I pay?</summary><p>At checkout you can choose UPI. The site shows your UPI ID and creates a payment link. After paying, enter the UPI transaction/reference ID before submitting the order.</p></details>
+        <details><summary>How is shipping calculated?</summary><p>Shipping is ₹99 for orders below ₹2,500 and free for orders of ₹2,500 or more. You can change these rules in <code>config.js</code>.</p></details>
+        <details><summary>Are these original artworks?</summary><p>Yes. The current collection is presented as original handmade artwork. Product descriptions and prices can be edited as your catalogue grows.</p></details>
+        <details><summary>How do I manage orders?</summary><p>The included admin dashboard connects to Supabase, where you can see orders, customer details, payment references and update order status. Setup instructions are included.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><a href="#top" class="footer-logo">Mini's Art Gallery</a><p>Original handmade art · Online orders</p></div>
+    <div><a href="#shop">Shop</a><a href="#story">About</a><a href="#faq">FAQ</a><a href="admin.html">Admin</a></div>
+    <span>© <span id="year"></span> Mini's Art Gallery</span>
+  </footer>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="drawer-head"><h2>Your bag</h2><button id="closeCart" class="icon-btn">×</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-summary">
+      <div><span>Subtotal</span><b id="cartSubtotal">₹0</b></div>
+      <div><span>Shipping</span><b id="cartShipping">₹0</b></div>
+      <div class="total"><span>Total</span><b id="cartTotal">₹0</b></div>
+      <button class="btn dark full" id="checkoutBtn">Proceed to checkout</button>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <section class="checkout-modal" id="checkoutModal" aria-hidden="true">
+    <div class="checkout-card">
+      <button class="modal-close icon-btn" id="closeCheckout">×</button>
+      <div id="checkoutFormView">
+        <span class="eyebrow">SECURE CHECKOUT</span>
+        <h2>Complete your order</h2>
+        <div class="checkout-layout">
+          <form id="orderForm">
+            <div class="checkout-products" id="checkoutProducts"></div>
+            <div class="form-grid">
+              <label>Full name<input name="name" required autocomplete="name"></label>
+              <label>Email<input name="email" type="email" required autocomplete="email"></label>
+              <label>Phone<input name="phone" required autocomplete="tel" placeholder="+91"></label>
+              <label>PIN code<input name="pincode" required inputmode="numeric" maxlength="6" autocomplete="postal-code"></label>
+            </div>
+            <label>Delivery address<textarea name="address" rows="3" required autocomplete="street-address"></textarea></label>
+            <label>UPI transaction/reference ID <input name="payment_ref" placeholder="Enter after paying via UPI" required></label>
+            <label>Order note (optional)<textarea name="note" rows="2" placeholder="Gift message, framing request, etc."></textarea></label>
+            <div class="payment-box">
+              <div><b>Pay via UPI</b><span>Use any UPI app</span></div>
+              <strong id="checkoutPayAmount">₹0</strong>
+              <p>Tap “Pay with UPI” to open your UPI app. Complete payment, then enter the transaction/reference ID above.</p>
+              <div class="upi-actions"><button type="button" class="btn terracotta" id="payUpi">Pay with UPI</button><button type="button" class="btn outline" id="copyUpi">Copy UPI ID</button></div>
+              <small>UPI ID: <b id="upiIdText"></b></small>
+            </div>
+            <button class="btn dark full" type="submit" id="placeOrder">Place order</button>
+            <p class="tiny">By placing your order, you confirm the details are correct. Final dispatch timing is confirmed by the gallery.</p>
+          </form>
+          <div class="checkout-side">
+            <h3>Order summary</h3>
+            <div id="checkoutSummary"></div>
+            <div class="side-total"><span>Total</span><b id="sideTotal">₹0</b></div>
+          </div>
+        </div>
+      </div>
+      <div id="orderSuccess" class="order-success" hidden>
+        <div class="success-check">✓</div>
+        <span class="eyebrow">ORDER RECEIVED</span>
+        <h2>Thank you for your order.</h2>
+        <p>Your order number is <strong id="successOrderId"></strong>. Keep this number and your payment reference for your records.</p>
+        <button class="btn dark" id="continueShopping">Continue shopping</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="shop.js"></script>
+</body>
+</html>
